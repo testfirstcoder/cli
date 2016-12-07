@@ -100,6 +100,8 @@ namespace Microsoft.DotNet.Cli.Build
         [Target(nameof(PrepareTargets.Init))]
         public static BuildTargetResult CompileStage2(BuildTargetContext c)
         {
+            PrepareTargets.RestorePackagesCore(c, DotNetCli.Stage1).EnsureSuccessful();
+
             var configuration = c.BuildContext.Get<string>("Configuration");
 
             CleanBinObj(c, Path.Combine(c.BuildContext.BuildDirectory, "src"));

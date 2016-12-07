@@ -175,10 +175,10 @@ namespace Microsoft.DotNet.Cli.Build
 
             Mkdirp(Path.GetDirectoryName(combinedSharedHostAndFrameworkArchiveDownloadFile));
 
-            if ( ! File.Exists(combinedSharedHostAndFrameworkArchiveDownloadFile))
+            if (!File.Exists(combinedSharedHostAndFrameworkArchiveDownloadFile))
             {
                 // Needed for computing the blob path
-                var combinedSharedHostAndFrameworkArchiveBuildContextFile = 
+                var combinedSharedHostAndFrameworkArchiveBuildContextFile =
                     c.BuildContext.Get<string>("CombinedFrameworkHostCompressedFile");
 
                 AzurePublisher.DownloadFile(
@@ -225,11 +225,11 @@ namespace Microsoft.DotNet.Cli.Build
             Mkdirp(Path.GetDirectoryName(sharedHostInstallerDownloadFile));
             Mkdirp(Path.GetDirectoryName(hostFxrInstallerDownloadFile));
 
-            if ( ! File.Exists(sharedFrameworkInstallerDownloadFile))
+            if (!File.Exists(sharedFrameworkInstallerDownloadFile))
             {
                 var sharedFrameworkInstallerDestinationFile = c.BuildContext.Get<string>("SharedFrameworkInstallerFile");
                 Mkdirp(Path.GetDirectoryName(sharedFrameworkInstallerDestinationFile));
-                
+
                 AzurePublisher.DownloadFile(
                     AzurePublisher.CalculateInstallerBlob(
                         sharedFrameworkInstallerDestinationFile,
@@ -239,8 +239,8 @@ namespace Microsoft.DotNet.Cli.Build
 
                 File.Copy(sharedFrameworkInstallerDownloadFile, sharedFrameworkInstallerDestinationFile, true);
             }
-            
-            if ( ! File.Exists(sharedHostInstallerDownloadFile))
+
+            if (!File.Exists(sharedHostInstallerDownloadFile))
             {
                 var sharedHostInstallerDestinationFile = c.BuildContext.Get<string>("SharedHostInstallerFile");
                 Mkdirp(Path.GetDirectoryName(sharedHostInstallerDestinationFile));
@@ -255,7 +255,7 @@ namespace Microsoft.DotNet.Cli.Build
                 File.Copy(sharedHostInstallerDownloadFile, sharedHostInstallerDestinationFile, true);
             }
 
-            if ( ! File.Exists(hostFxrInstallerDownloadFile))
+            if (!File.Exists(hostFxrInstallerDownloadFile))
             {
                 var hostFxrInstallerDestinationFile = c.BuildContext.Get<string>("HostFxrInstallerFile");
                 Mkdirp(Path.GetDirectoryName(hostFxrInstallerDestinationFile));
@@ -277,7 +277,7 @@ namespace Microsoft.DotNet.Cli.Build
         public static BuildTargetResult CheckPackageCache(BuildTargetContext c)
         {
             var ciBuild = string.Equals(Environment.GetEnvironmentVariable("CI_BUILD"), "1", StringComparison.Ordinal);
-            
+
             // Always set the package cache location local to the build
             Environment.SetEnvironmentVariable("NUGET_PACKAGES", Dirs.NuGetPackages);
 
@@ -331,11 +331,15 @@ namespace Microsoft.DotNet.Cli.Build
         public static BuildTargetResult RestorePackages(BuildTargetContext c)
         {
             var dotnet = DotNetCli.Stage0;
+            return RestorePackagesCore(c, dotnet);
+        }
 
+        public static BuildTargetResult RestorePackagesCore(BuildTargetContext c, DotNetCli dotnet)
+        {
             dotnet.Restore("--verbosity", "verbose", "--disable-parallel")
-                .WorkingDirectory(Path.Combine(c.BuildContext.BuildDirectory, "src"))
-                .Execute()
-                .EnsureSuccessful();
+                            .WorkingDirectory(Path.Combine(c.BuildContext.BuildDirectory, "src"))
+                            .Execute()
+                            .EnsureSuccessful();
             dotnet.Restore("--verbosity", "verbose", "--disable-parallel", "--infer-runtimes")
                 .WorkingDirectory(Path.Combine(c.BuildContext.BuildDirectory, "tools"))
                 .Execute()
